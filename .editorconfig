@@ -1,0 +1,41 @@
+root = true
+
+[*]
+
+charset                  = utf-8-bom
+insert_final_newline     = true
+trim_trailing_whitespace = true
+
+[*.json]
+
+indent_style             = space
+indent_size              = 2
+
+[*.csproj]
+
+indent_style             = space
+indent_size              = 2
+
+[*.cs]
+
+indent_style             = space
+indent_size              = 4
+
+dotnet_analyzer_diagnostic.severity = default
+
+# ~~~~~ Naming rules ~~~~~
+
+dotnet_naming_rule.async_methods_should_end_with_async.severity = error
+dotnet_naming_rule.async_methods_should_end_with_async.symbols  = async_methods
+dotnet_naming_rule.async_methods_should_end_with_async.style    = end_with_async
+
+# ~~~~~ Symbol specifications ~~~~~
+
+dotnet_naming_symbols.async_methods.applicable_kinds           = method
+dotnet_naming_symbols.async_methods.applicable_accessibilities = *
+dotnet_naming_symbols.async_methods.required_modifiers         = async
+
+# ~~~~~ Naming styles ~~~~~
+
+dotnet_naming_style.end_with_async.capitalization  = pascal_case
+dotnet_naming_style.end_with_async.required_suffix = Async
