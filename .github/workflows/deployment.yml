@@ -1,0 +1,51 @@
+﻿name: Deploy an application
+
+on:
+  push:
+    branches: [ main ]
+    paths-ignore: [ '.github/workflows/templates/**' ]
+
+env:
+  DOTNET_VERSION: 7.0.x
+  OUTPUT_DIRECTORY: ./output
+
+defaults:
+  run:
+    shell: pwsh
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
+jobs:
+  deployment:
+    name: Deployment
+    runs-on: windows-latest
+    steps:
+    
+    - name: Checkout a repository
+      uses: actions/checkout@v3
+
+    - name: Login to the Azure CLI
+      uses: azure/login@v1
+      id: login
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Set up a .NET environment
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Build a project
+      run: dotnet build ./src/Tibres/Tibres.csproj --configuration Release --output ${{ env.OUTPUT_DIRECTORY }}
+
+    - name: Deploy a function app
+      uses: Azure/functions-action@v1
+      with:
+        app-name: ${{ secrets.FUNCTION_APP_NAME }}
+        package: ${{ env.OUTPUT_DIRECTORY }}
+
+    - name: Log out from the Azure
+      if: steps.login.outcome == 'success'
+      run: az logout
