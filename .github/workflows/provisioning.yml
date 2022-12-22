@@ -1,0 +1,52 @@
+﻿name: Provision an infrastructure
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+    - 'deploy/**'
+    - '.github/workflows/provisioning.yml'
+
+env:
+  AZURE_LOCATION: westeurope
+
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
+jobs:
+  provisioning:
+    name: Provisioning
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Login to the Azure CLI
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Create a resource group
+      uses: azure/CLI@v1
+      with:
+        inlineScript: az group create --name ${{ secrets.RESOURCE_GROUP_NAME }} --location ${{ env.AZURE_LOCATION }}
+
+    - name: Checkout a repository
+      uses: actions/checkout@v3
+
+    - name: Create and pre-configure resources
+      uses: azure/arm-deploy@v1
+      with:
+        deploymentName: Deployment-${{ github.run_number }}
+        template: deploy/main.bicep
+        parameters: applicationName=${{ secrets.APPLICATION_NAME }}
+        resourceGroupName: ${{ secrets.RESOURCE_GROUP_NAME }}
+
+    - name: Log out from the Azure
+      if: success() || failure()
+      uses: azure/CLI@v1
+      with:
+        inlineScript: |
+          az logout
+          az cache purge
+          az account clear

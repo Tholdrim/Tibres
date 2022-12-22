@@ -3,15 +3,14 @@
 on:
   push:
     branches: [ main ]
-    paths-ignore: [ '.github/workflows/templates/**' ]
+    paths:
+    - 'src/**'
+    - '.github/workflows/deployment.yml'
 
 env:
   DOTNET_VERSION: 7.0.x
   OUTPUT_DIRECTORY: ./output
 
-defaults:
-  run:
-    shell: pwsh
 
 concurrency:
   group: ${{ github.workflow }}
@@ -20,15 +19,11 @@ concurrency:
 jobs:
   deployment:
     name: Deployment
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
-    
-    - name: Checkout a repository
-      uses: actions/checkout@v3
 
     - name: Login to the Azure CLI
       uses: azure/login@v1
-      id: login
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
 
@@ -37,15 +32,23 @@ jobs:
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
 
+    - name: Checkout a repository
+      uses: actions/checkout@v3
+
     - name: Build a project
       run: dotnet build ./src/Tibres/Tibres.csproj --configuration Release --output ${{ env.OUTPUT_DIRECTORY }}
 
     - name: Deploy a function app
       uses: Azure/functions-action@v1
       with:
-        app-name: ${{ secrets.FUNCTION_APP_NAME }}
+        app-name: ${{ secrets.APPLICATION_NAME }}
         package: ${{ env.OUTPUT_DIRECTORY }}
 
     - name: Log out from the Azure
-      if: steps.login.outcome == 'success'
-      run: az logout
+      if: success() || failure()
+      uses: azure/CLI@v1
+      with:
+        inlineScript: |
+          az logout
+          az cache purge
+          az account clear
