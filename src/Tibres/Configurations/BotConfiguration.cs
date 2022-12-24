@@ -6,7 +6,7 @@ namespace Tibres
     {
         public BotConfiguration(IConfiguration configuration)
         {
-            PublicKey = GetValue<string>(configuration, SettingsKeys.PublicKey);
+            PublicKey = GetValue<string>(configuration, SettingsKeys.DiscordPublicKey);
         }
 
         public string PublicKey { get; }

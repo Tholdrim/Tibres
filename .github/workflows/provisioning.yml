@@ -39,7 +39,7 @@ jobs:
       with:
         deploymentName: Deployment-${{ github.run_number }}
         template: deploy/main.bicep
-        parameters: applicationName=${{ secrets.APPLICATION_NAME }}
+        parameters: applicationName=${{ secrets.APPLICATION_NAME }} discordPublicKey=${{ secrets.DISCORD_PUBLIC_KEY }}
         resourceGroupName: ${{ secrets.RESOURCE_GROUP_NAME }}
 
     - name: Log out from the Azure
