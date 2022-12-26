@@ -1,12 +1,20 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System.Text.Json;
 using Tibres;
 
 var host = new HostBuilder()
     .ConfigureFunctionsWorkerDefaults()
     .ConfigureAppConfiguration(builder => builder.AddUserSecrets<Program>())
-    .ConfigureServices((_, services) => services.AddSingleton<IBotConfiguration, BotConfiguration>())
+    .ConfigureServices(ConfigureServices)
     .Build();
 
 host.Run();
+
+static void ConfigureServices(HostBuilderContext context, IServiceCollection services)
+{
+    services.AddSingleton<IBotConfiguration, BotConfiguration>();
+
+    services.Configure<JsonSerializerOptions>(options => options.PropertyNamingPolicy = JsonNamingPolicy.CamelCase);
+}

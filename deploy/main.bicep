@@ -5,6 +5,9 @@ param tenantId string = subscription().tenantId
 @secure()
 param discordPublicKey string
 
+@secure()
+param discordToken string
+
 var keyVaultSecretsUserRoleId = '4633458b-17de-408a-b874-0445c86b69e6'
 var storageAccountConnectionString = 'DefaultEndpointsProtocol=https;AccountName=${storageAccount.name};AccountKey=${listKeys(storageAccount.id, storageAccount.apiVersion).keys[0].value};EndpointSuffix=${environment().suffixes.storage}'
 
@@ -74,6 +77,14 @@ resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' = {
       value: discordPublicKey
     }
   }
+
+  resource discordTokenSecret 'secrets@2022-07-01' = {
+    name: 'DiscordToken'
+    properties: {
+      contentType: 'string'
+      value: discordToken
+    }
+  }
 }
 
 resource keyVaultRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
@@ -94,6 +105,7 @@ module appServiceSettings './app settings.bicep' = {
     newAppSettings: {
       AzureWebJobsStorage: storageAccountConnectionString
       DiscordPublicKey: '@Microsoft.KeyVault(SecretUri=${keyVault::discordPublicKeySecret.properties.secretUri})'
+      DiscordToken: '@Microsoft.KeyVault(SecretUri=${keyVault::discordTokenSecret.properties.secretUri})'
       FUNCTIONS_EXTENSION_VERSION: '~4'
       FUNCTIONS_WORKER_RUNTIME: 'dotnet-isolated'
       WEBSITE_CONTENTAZUREFILECONNECTIONSTRING: storageAccountConnectionString
