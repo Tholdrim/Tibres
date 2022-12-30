@@ -40,7 +40,7 @@ jobs:
         deploymentName: Deployment-${{ github.run_number }}
         template: deploy/main.bicep
         parameters: >
-          applicationName=${{ secrets.APPLICATION_NAME }}
+          mainIdentifier=${{ secrets.APPLICATION_NAME }}
           discordPublicKey=${{ secrets.DISCORD_PUBLIC_KEY }}
           discordToken=${{ secrets.DISCORD_TOKEN}}
         resourceGroupName: ${{ secrets.RESOURCE_GROUP_NAME }}

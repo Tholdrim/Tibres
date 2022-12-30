@@ -1,4 +1,4 @@
-param appServiceName string
+﻿param appServiceName string
 
 @secure()
 param existingAppSettings object
