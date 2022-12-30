@@ -15,6 +15,9 @@ host.Run();
 static void ConfigureServices(HostBuilderContext context, IServiceCollection services)
 {
     services.AddSingleton<IBotConfiguration, BotConfiguration>();
+    services.AddSingleton<ICommandFactory, CommandFactory>();
+
+    services.AddSingleton<ICommand, HelpCommand>();
 
     services.Configure<JsonSerializerOptions>(options => options.PropertyNamingPolicy = JsonNamingPolicy.CamelCase);
 }
