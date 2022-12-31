@@ -4,24 +4,24 @@ using System.Threading.Tasks;
 
 namespace Tibres.Commands
 {
-    internal class HelpCommand : ICommand
+    internal class HelpCommand : Command
     {
-        private readonly ICommandFactory _commandFactory;
+        private readonly ICommandRepository _commandRepository;
 
-        public HelpCommand(ICommandFactory commandFactory)
+        public HelpCommand(ICommandRepository commandRepository)
         {
-            _commandFactory = commandFactory;
+            _commandRepository = commandRepository;
         }
 
-        public string Name => "help";
+        public override string Name => "help";
 
-        public string Category => CommandCategories.Other;
+        public override string Category => CommandCategories.Other;
 
-        public CommandDescription Description { get; } = new(
+        public override CommandDescription Description { get; } = new(
             Chat: "Displays a brief description of the bot and information about available commands.",
             Help: "displays this message.");
 
-        public Task HandleInteractionAsync(ISlashCommandInteraction slashCommand)
+        public override Task HandleInteractionAsync(ISlashCommandInteraction slashCommand)
         {
             var embedBuilder = new EmbedBuilder()
                .WithTitle("Tibres")
@@ -30,6 +30,7 @@ namespace Tibres.Commands
                     "internally uses the [TibiaData API](https://tibiadata.com/) to retrieve and save the results of individual characters. " +
                     "These are then used, among other things, to generate monthly progress reports introducing an element of competition " +
                     "among server members and encouraging them to work harder.")
+               .WithFooter("If you enjoy the bot, please show your support by giving the GitHub repository a star.")
                .WithColor(Color.LightGrey);
 
             AddCommandCategoryFields(embedBuilder);
@@ -38,9 +39,16 @@ namespace Tibres.Commands
             return slashCommand.FollowupAsync(embed: embedBuilder.Build());
         }
 
+        protected override SlashCommandBuilder ExtendCommandDefinition(SlashCommandBuilder slashCommandBuilder)
+        {
+            return slashCommandBuilder
+                .WithDefaultMemberPermissions(null)
+                .WithDMPermission(true);
+        }
+
         private void AddCommandCategoryFields(EmbedBuilder embedBuilder)
         {
-            var commands = _commandFactory.GetAllCommandMetadata();
+            var commands = _commandRepository.GetAllCommandMetadata();
 
             foreach (var commandCategory in commands.GroupBy(c => c.Category))
             {

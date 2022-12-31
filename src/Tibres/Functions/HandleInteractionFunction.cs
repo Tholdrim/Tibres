@@ -8,12 +8,12 @@ namespace Tibres
 {
     internal class HandleInteractionFunction
     {
-        private readonly ICommandFactory _commandFactory;
+        private readonly ICommandRepository _commandRepository;
         private readonly IBotConfiguration _configuration;
 
-        public HandleInteractionFunction(ICommandFactory commandFactory, IBotConfiguration configuration)
+        public HandleInteractionFunction(ICommandRepository commandRepository, IBotConfiguration configuration)
         {
-            _commandFactory = commandFactory;
+            _commandRepository = commandRepository;
             _configuration = configuration;
         }
 
@@ -25,9 +25,9 @@ namespace Tibres
 
             await client.LoginAsync(TokenType.Bot, _configuration.Token);
 
-            var interaction = await client.ParseHttpInteractionAsync(message, _configuration.PublicKey, _ => true);
+            var interaction = await client.ParseHttpInteractionAsync(message, _configuration.PublicKey, doApiCallOnCreation: _ => true);
 
-            if (interaction is not RestSlashCommand slashCommand || !_commandFactory.TryGetCommand(slashCommand.Data.Name, out var command))
+            if (interaction is not RestSlashCommand slashCommand || !_commandRepository.TryGetCommand(slashCommand.Data.Name, out var command))
             {
                 // TODO: Log warning
 

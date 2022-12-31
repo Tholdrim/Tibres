@@ -6,8 +6,8 @@ namespace Tibres.Commands
     {
         public static void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<ICommand, HelpCommand>();
-            services.AddSingleton<ICommandFactory, CommandFactory>();
+            services.AddSingleton<Command, HelpCommand>();
+            services.AddSingleton<ICommandRepository, CommandRepository>();
         }
     }
 }

@@ -12,12 +12,12 @@ namespace Tibres
 {
     internal class RegisterCommandsFunction
     {
-        private readonly ICommandFactory _commandFactory;
+        private readonly ICommandRepository _commandRepository;
         private readonly IBotConfiguration _configuration;
 
-        public RegisterCommandsFunction(ICommandFactory commandFactory, IBotConfiguration configuration)
+        public RegisterCommandsFunction(ICommandRepository commandRepository, IBotConfiguration configuration)
         {
-            _commandFactory = commandFactory;
+            _commandRepository = commandRepository;
             _configuration = configuration;
         }
 
@@ -28,14 +28,9 @@ namespace Tibres
             var discord = new DiscordRestClient();
 
             await discord.LoginAsync(TokenType.Bot, _configuration.Token);
-            await discord.BulkOverwriteGlobalCommands(_commandFactory.GetAllCommandMetadata().Select(BuildCommand).ToArray());
+            await discord.BulkOverwriteGlobalCommands(_commandRepository.GetAllCommandProperties().ToArray());
 
             return request.CreateResponse(HttpStatusCode.OK);
         }
-
-        private static SlashCommandProperties BuildCommand(ICommandMetadata command) => new SlashCommandBuilder()
-            .WithName(command.Name)
-            .WithDescription(command.Description.Chat)
-            .Build();
     }
 }
