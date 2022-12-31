@@ -2,6 +2,7 @@
 using Discord.Rest;
 using Microsoft.Azure.Functions.Worker;
 using System.Threading.Tasks;
+using Tibres.Commands;
 
 namespace Tibres
 {

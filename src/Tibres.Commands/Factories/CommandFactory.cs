@@ -5,7 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
 
-namespace Tibres
+namespace Tibres.Commands
 {
     internal class CommandFactory : ICommandFactory
     {
@@ -18,7 +18,7 @@ namespace Tibres
 
         private Lazy<IDictionary<string, ICommand>> Commands { get; }
 
-        public IEnumerable<ICommand> GetAllCommands() => Commands.Value.Values;
+        public IEnumerable<ICommandMetadata> GetAllCommandMetadata() => Commands.Value.Values;
 
         public bool TryGetCommand(string name, [MaybeNullWhen(false)] out ICommand command) => Commands.Value.TryGetValue(name, out command);
     }

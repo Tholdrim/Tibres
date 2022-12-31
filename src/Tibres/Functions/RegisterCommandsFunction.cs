@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Tibres.Commands;
 
 namespace Tibres
 {
@@ -27,12 +28,12 @@ namespace Tibres
             var discord = new DiscordRestClient();
 
             await discord.LoginAsync(TokenType.Bot, _configuration.Token);
-            await discord.BulkOverwriteGlobalCommands(_commandFactory.GetAllCommands().Select(BuildCommand).ToArray());
+            await discord.BulkOverwriteGlobalCommands(_commandFactory.GetAllCommandMetadata().Select(BuildCommand).ToArray());
 
             return request.CreateResponse(HttpStatusCode.OK);
         }
 
-        private static SlashCommandProperties BuildCommand(ICommand command) => new SlashCommandBuilder()
+        private static SlashCommandProperties BuildCommand(ICommandMetadata command) => new SlashCommandBuilder()
             .WithName(command.Name)
             .WithDescription(command.Description.Chat)
             .Build();

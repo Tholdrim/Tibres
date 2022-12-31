@@ -1,4 +1,4 @@
-﻿namespace Tibres
+﻿namespace Tibres.Commands
 {
     internal static class CommandCategories
     {

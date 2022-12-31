@@ -14,10 +14,9 @@ host.Run();
 
 static void ConfigureServices(HostBuilderContext context, IServiceCollection services)
 {
-    services.AddSingleton<IBotConfiguration, BotConfiguration>();
-    services.AddSingleton<ICommandFactory, CommandFactory>();
+    Tibres.Commands.Services.ConfigureServices(services);
 
-    services.AddSingleton<ICommand, HelpCommand>();
+    services.AddSingleton<IBotConfiguration, BotConfiguration>();
 
     services.Configure<JsonSerializerOptions>(options => options.PropertyNamingPolicy = JsonNamingPolicy.CamelCase);
 }

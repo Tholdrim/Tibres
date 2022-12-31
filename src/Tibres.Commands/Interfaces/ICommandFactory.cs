@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Tibres
+namespace Tibres.Commands
 {
-    internal interface ICommandFactory
+    public interface ICommandFactory
     {
-        IEnumerable<ICommand> GetAllCommands();
+        IEnumerable<ICommandMetadata> GetAllCommandMetadata();
 
         bool TryGetCommand(string name, [MaybeNullWhen(false)] out ICommand command);
     }

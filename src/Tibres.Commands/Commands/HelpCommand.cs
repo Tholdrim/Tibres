@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Tibres
+namespace Tibres.Commands
 {
     internal class HelpCommand : ICommand
     {
@@ -40,7 +40,7 @@ namespace Tibres
 
         private void AddCommandCategoryFields(EmbedBuilder embedBuilder)
         {
-            var commands = _commandFactory.GetAllCommands();
+            var commands = _commandFactory.GetAllCommandMetadata();
 
             foreach (var commandCategory in commands.GroupBy(c => c.Category))
             {
