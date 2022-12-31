@@ -19,7 +19,7 @@ concurrency:
 jobs:
   deployment:
     name: Deployment
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
 
     - name: Login to the Azure CLI
@@ -35,8 +35,14 @@ jobs:
     - name: Checkout a repository
       uses: actions/checkout@v3
 
-    - name: Build a project
-      run: dotnet build ./src/Tibres/Tibres.csproj --configuration Release --output ${{ env.OUTPUT_DIRECTORY }}
+    - name: Publish a project
+      run: |
+        dotnet publish ./src/Tibres/Tibres.csproj --output ${{ env.OUTPUT_DIRECTORY }} `
+                                                  --configuration Release `
+                                                  --runtime win-x64 `
+                                                  --no-self-contained `
+                                                  -p:PublishReadyToRun=true `
+                                                  -p:PublishReadyToRunShowWarnings=true
 
     - name: Deploy a function app
       uses: Azure/functions-action@v1
@@ -46,9 +52,7 @@ jobs:
 
     - name: Log out from the Azure
       if: success() || failure()
-      uses: azure/CLI@v1
-      with:
-        inlineScript: |
-          az logout
-          az cache purge
-          az account clear
+      run: |
+        az logout
+        az cache purge
+        az account clear
