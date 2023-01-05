@@ -13,11 +13,11 @@ namespace Tibres
 {
     internal class ReceiveInteractionFunction
     {
-        private readonly IBotConfiguration _configuration;
+        private readonly IDiscordClient _discordClient;
 
-        public ReceiveInteractionFunction(IBotConfiguration configuration)
+        public ReceiveInteractionFunction(IDiscordClient discordClient)
         {
-            _configuration = configuration;
+            _discordClient = discordClient;
         }
 
         [Function(Names.Functions.ReceiveInteraction)]
@@ -26,9 +26,8 @@ namespace Tibres
         {
             try
             {
-                var client = new DiscordRestClient();
                 var message = await GetMessageAsync(request);
-                var interaction = await client.ParseHttpInteractionAsync(message, _configuration.PublicKey, doApiCallOnCreation: _ => false);
+                var interaction = await _discordClient.ParseHttpInteractionAsync(message, doApiCallOnCreation: _ => false);
 
                 return interaction switch
                 {

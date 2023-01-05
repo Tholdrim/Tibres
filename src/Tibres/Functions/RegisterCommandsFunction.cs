@@ -1,6 +1,4 @@
-﻿using Discord;
-using Discord.Rest;
-using Microsoft.Azure.Functions.Worker;
+﻿using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using System.Linq;
 using System.Net;
@@ -12,23 +10,22 @@ namespace Tibres
 {
     internal class RegisterCommandsFunction
     {
+        private readonly IDiscordClient _discordClient;
         private readonly ICommandRepository _commandRepository;
-        private readonly IBotConfiguration _configuration;
 
-        public RegisterCommandsFunction(ICommandRepository commandRepository, IBotConfiguration configuration)
+        public RegisterCommandsFunction(IDiscordClient discordClient, ICommandRepository commandRepository)
         {
+            _discordClient = discordClient;
             _commandRepository = commandRepository;
-            _configuration = configuration;
         }
 
         [Function(Names.Functions.RegisterCommands)]
         public async Task<HttpResponseData> RunAsync(
             [HttpTrigger(AuthorizationLevel.Anonymous, nameof(HttpMethod.Post), Route = "registrations")] HttpRequestData request)
         {
-            var discord = new DiscordRestClient();
+            var client = await _discordClient.GetInternalClientAsync();
 
-            await discord.LoginAsync(TokenType.Bot, _configuration.Token);
-            await discord.BulkOverwriteGlobalCommands(_commandRepository.GetAllCommandProperties().ToArray());
+            await client.BulkOverwriteGlobalCommands(_commandRepository.GetAllCommandProperties().ToArray());
 
             return request.CreateResponse(HttpStatusCode.OK);
         }
