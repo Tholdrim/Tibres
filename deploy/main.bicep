@@ -1,12 +1,13 @@
-param mainIdentifier string
+﻿param mainIdentifier string
 
 param location string = resourceGroup().location
+param tenantId string = subscription().tenantId
 
 @secure()
-param discordPublicKey string
+param botPublicKey string
 
 @secure()
-param discordToken string
+param botToken string
 
 module functionApp './function app.bicep' = {
   name: '${deployment().name}-FunctionApp'
@@ -26,8 +27,9 @@ module keyVault './key vault.bicep' = {
     keyVaultName: mainIdentifier
     storageAccountName: storageAccount.outputs.name
     location: location
-    discordPublicKey: discordPublicKey
-    discordToken: discordToken
+    tenantId: tenantId
+    botPublicKey: botPublicKey
+    botToken: botToken
   }
 }
 

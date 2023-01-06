@@ -16,7 +16,7 @@ static void ConfigureServices(HostBuilderContext context, IServiceCollection ser
 {
     Tibres.Commands.Services.ConfigureServices(services);
 
-    services.AddSingleton<IBotConfiguration, BotConfiguration>();
+    services.AddSingleton<IBotConfiguration>(BotOptions.Initialize(context.Configuration));
     services.AddSingleton<IDiscordClient, DiscordClient>();
 
     services.Configure<JsonSerializerOptions>(options => options.PropertyNamingPolicy = JsonNamingPolicy.CamelCase);

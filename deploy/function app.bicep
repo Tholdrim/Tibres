@@ -1,9 +1,10 @@
-param appServicePlanName string
+﻿param appServicePlanName string
 param functionAppName string
 param keyVaultName string
 param storageAccountName string
 
 param location string
+
 param keyVaultSecretUris object
 
 resource appServicePlan 'Microsoft.Web/serverfarms@2022-03-01' = {
@@ -57,8 +58,8 @@ module functionAppSettings './app settings.bicep' = {
     existingAppSettings: list('${functionApp.id}/config/appsettings', functionApp.apiVersion).properties
     newAppSettings: {
       AzureWebJobsStorage__accountName: storageAccountName
-      DiscordPublicKey: '@Microsoft.KeyVault(SecretUri=${keyVaultSecretUris.discordPublicKey}/)'
-      DiscordToken: '@Microsoft.KeyVault(SecretUri=${keyVaultSecretUris.discordToken}/)'
+      Bot__PublicKey: '@Microsoft.KeyVault(SecretUri=${keyVaultSecretUris.botPublicKey}/)'
+      Bot__Token: '@Microsoft.KeyVault(SecretUri=${keyVaultSecretUris.botToken}/)'
       FUNCTIONS_EXTENSION_VERSION: '~4'
       FUNCTIONS_WORKER_RUNTIME: 'dotnet-isolated'
       WEBSITE_CONTENTAZUREFILECONNECTIONSTRING: '@Microsoft.KeyVault(SecretUri=${keyVaultSecretUris.storageAccountConnectionString}/)'
