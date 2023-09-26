@@ -15,6 +15,7 @@ host.Run();
 static void ConfigureServices(HostBuilderContext context, IServiceCollection services)
 {
     Tibres.Commands.Services.ConfigureServices(services);
+    Tibres.Integrations.Services.ConfigureServices(services);
 
     services.AddSingleton<IBotConfiguration>(BotOptions.Initialize(context.Configuration));
     services.AddSingleton<IDiscordClient, DiscordClient>();
