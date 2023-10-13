@@ -2,26 +2,34 @@ root = true
 
 [*]
 
-charset                  = utf-8-bom
+charset                  = utf-8
+end_of_line              = lf
+indent_size              = 2
+indent_style             = space
 insert_final_newline     = true
 trim_trailing_whitespace = true
 
-[*.json]
-
-indent_style             = space
-indent_size              = 2
-
 [*.csproj]
 
-indent_style             = space
-indent_size              = 2
+end_of_line              = crlf
+
+[*.sln]
+
+end_of_line              = crlf
+indent_size              = 4
+indent_style             = tab
 
 [*.cs]
 
-indent_style             = space
 indent_size              = 4
 
 dotnet_analyzer_diagnostic.severity = default
+dotnet_sort_system_directives_first = false
+
+csharp_style_implicit_object_creation_when_type_is_apparent       = true:error
+
+dotnet_style_allow_multiple_blank_lines_experimental              = false:error
+dotnet_style_allow_statement_immediately_after_block_experimental = false:error
 
 # ~~~~~ Naming rules ~~~~~
 

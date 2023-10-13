@@ -1,5 +1,7 @@
-*           text=auto
-
+*.bicep     text
 *.cs        text diff=csharp
-*.sln       text eol=crlf
 *.csproj    text eol=crlf
+*.json      text
+*.sln       text eol=crlf
+*.txt       text
+*.yml       text

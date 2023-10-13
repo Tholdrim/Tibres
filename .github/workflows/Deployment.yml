@@ -1,0 +1,56 @@
+name: Deploy an application
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - .github/workflows/Deployment.yml
+      - Source/**
+
+permissions:
+  id-token: write
+
+env:
+  DOTNET_VERSION: 7.0.x
+  OUTPUT_DIRECTORY: ./Output
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
+jobs:
+  deployment:
+    name: Deployment
+    runs-on: windows-latest
+    steps:
+
+      - name: Login to the Azure CLI
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Set up a .NET environment
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Checkout a repository
+        uses: actions/checkout@v3
+        with:
+          sparse-checkout: |
+            Source
+
+      - name: Publish a project
+        run: |
+          dotnet publish ./Source/Tibres/Tibres.csproj --output ${{ env.OUTPUT_DIRECTORY }} `
+                                                       --configuration Release `
+                                                       --runtime win-x64 `
+                                                       --no-self-contained
+
+      - name: Deploy a function app
+        uses: Azure/functions-action@v1
+        with:
+          app-name: ${{ vars.AZURE_FUNCTION_APP }}
+          package: ${{ env.OUTPUT_DIRECTORY }}

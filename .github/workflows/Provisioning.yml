@@ -1,0 +1,53 @@
+name: Provision an infrastructure
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - .github/workflows/Provisioning.yml
+      - Templates/*.bicep
+
+permissions:
+  id-token: write
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
+jobs:
+  provisioning:
+    name: Provisioning
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Login to the Azure CLI
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Checkout a repository
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            Templates
+
+      - name: Set current date
+        run: echo "CURRENT_DATE=$(date +'%Y-%m-%d')" >> ${GITHUB_ENV}
+
+      - name: Create and pre-configure resources
+        uses: azure/arm-deploy@v1
+        with:
+          deploymentName: Tibres-${{ env.CURRENT_DATE }}
+          resourceGroupName: ${{ vars.AZURE_RESOURCE_GROUP }}
+          template: Templates/Main.bicep
+          parameters: >
+            applicationInsightsName=${{ vars.AZURE_APPLICATION_INSIGHTS }}
+            appServicePlanName=${{ vars.AZURE_APP_SERVICE_PLAN }}
+            functionAppName=${{ vars.AZURE_FUNCTION_APP }}
+            keyVaultName=${{ vars.AZURE_KEY_VAULT }}
+            logsWorkspaceName=${{ vars.AZURE_LOGS_WORSKPACE }}
+            storageAccountName=${{ vars.AZURE_STORAGE_ACCOUNT }}
+            botPublicKey=${{ secrets.BOT_PUBLIC_KEY }}
+            botToken=${{ secrets.BOT_TOKEN}}
