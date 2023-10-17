@@ -19,7 +19,7 @@ namespace Tibres
         }
 
         [Function(Names.Functions.ReceiveInteraction)]
-        public async Task<Output> RunAsync(
+        public async Task<InteractionReceiptOutput> RunAsync(
             [HttpTrigger(AuthorizationLevel.Anonymous, nameof(HttpMethod.Post), Route = "interactions")] HttpRequestData request)
         {
             try
@@ -29,14 +29,14 @@ namespace Tibres
 
                 return interaction switch
                 {
-                    RestSlashCommand slashCommand       => Output.Create(request, json: slashCommand.Defer(), message),
-                    RestPingInteraction pingInteraction => Output.Create(request, json: pingInteraction.AcknowledgePing(), message: null),
-                    _                                   => Output.Create(request, HttpStatusCode.NotImplemented)
+                    RestSlashCommand slashCommand       => PrepareOutput(request, json: slashCommand.Defer(), message),
+                    RestPingInteraction pingInteraction => PrepareOutput(request, json: pingInteraction.AcknowledgePing(), message: null),
+                    _                                   => PrepareOutput(request, HttpStatusCode.NotImplemented)
                 };
             }
             catch (Exception exception) when (exception is BadRequestException or BadSignatureException)
             {
-                return Output.Create(request, HttpStatusCode.Unauthorized);
+                return PrepareOutput(request, HttpStatusCode.Unauthorized);
             }
         }
 
@@ -60,23 +60,15 @@ namespace Tibres
             }
         }
 
-        public class Output
+        private static InteractionReceiptOutput PrepareOutput(HttpRequestData request, HttpStatusCode statusCode) => new()
         {
-            public required HttpResponseData Response { get; init; }
+            Response = request.CreateResponse(statusCode)
+        };
 
-            [QueueOutput(Names.Queues.Interactions)]
-            public InteractionMessage? Message { get; init; }
-
-            public static Output Create(HttpRequestData request, HttpStatusCode statusCode) => new()
-            {
-                Response = request.CreateResponse(statusCode)
-            };
-
-            public static Output Create(HttpRequestData request, string json, InteractionMessage? message) => new()
-            {
-                Response = request.CreateJsonResponse(json),
-                Message = message
-            };
-        }
+        private static InteractionReceiptOutput PrepareOutput(HttpRequestData request, string json, InteractionMessage? message) => new()
+        {
+            Response = request.CreateJsonResponse(json),
+            Message = message
+        };
     }
 }

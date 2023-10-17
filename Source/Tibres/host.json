@@ -10,6 +10,11 @@
       "samplingSettings": {
         "isEnabled": false
       }
+    },
+    "logLevel": {
+      "Default": "Warning",
+      "Host.Results": "Information",
+      "Microsoft.Azure.WebJobs.Hosting.JobHostService": "Information"
     }
   }
 }
