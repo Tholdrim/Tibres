@@ -5,13 +5,16 @@ param keyVaultName string
 param logsWorkspaceName string
 param storageAccountName string
 
+param principalId string = ''
+
 @secure()
 param botPublicKey string
 
 @secure()
 param botToken string
 
-param principalId string = ''
+@secure()
+param serverId string = ''
 
 #disable-next-line no-loc-expr-outside-params
 var location = resourceGroup().location
@@ -29,7 +32,7 @@ module appSettings 'App settings.bicep' = {
   name: '${deployment().name}-AppSettings'
   params: {
     appServiceName: functionAppName
-    appSettings: {
+    appSettings: union({
       APPINSIGHTS_INSTRUMENTATIONKEY: applicationInsights.outputs.instrumentationKey
       AzureWebJobsStorage__accountName: storageAccountName
       Bot__PublicKey: '@Microsoft.KeyVault(SecretUri=${keyVault.outputs.secretUris.botPublicKey}/)'
@@ -40,7 +43,9 @@ module appSettings 'App settings.bicep' = {
       WEBSITE_CONTENTSHARE: functionAppName
       WEBSITE_ENABLE_SYNC_UPDATE_SITE: 'true'
       WEBSITE_RUN_FROM_PACKAGE: '1'
-    }
+    }, empty(keyVault.outputs.secretUris.serverId) ? {} : {
+      Server__Id: '@Microsoft.KeyVault(SecretUri=${keyVault.outputs.secretUris.serverId}/)'
+    })
   }
   dependsOn: [ roleAssignments ]
 }
@@ -62,6 +67,7 @@ module keyVault 'Key Vault.bicep' = {
     location: location
     botPublicKey: botPublicKey
     botToken: botToken
+    serverId: serverId
   }
   dependsOn: [ storageAccount ]
 }

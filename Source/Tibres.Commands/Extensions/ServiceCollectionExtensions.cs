@@ -2,9 +2,9 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Tibres.Commands
 {
-    public static class Services
+    public static class ServiceCollectionExtensions
     {
-        public static void ConfigureServices(IServiceCollection services)
+        public static void AddCommands(this IServiceCollection services)
         {
             services.AddSingleton<Command, HelpCommand>();
             services.AddSingleton<ICommandRepository, CommandRepository>();

@@ -8,12 +8,16 @@ namespace Tibres
 {
     internal class DiscordClient : IDiscordClient
     {
-        private readonly BotOptions _options;
+        private readonly BotOptions _botOptions;
+        private readonly ServerOptions _serverOptions;
 
-        public DiscordClient(IOptions<BotOptions> options)
+        public DiscordClient(IOptions<BotOptions> botOptions, IOptions<ServerOptions> serverOptions)
         {
-            _options = options.Value;
+            _botOptions = botOptions.Value;
+            _serverOptions = serverOptions.Value;
         }
+
+        public ulong? ServerId => _serverOptions.Id;
 
         private DiscordRestClient InternalClient { get; } = new();
 
@@ -22,7 +26,7 @@ namespace Tibres
             if (InternalClient.LoginState != LoginState.LoggedIn)
             {
                 // There is no need for a semaphore, as the library already uses one.
-                await InternalClient.LoginAsync(TokenType.Bot, _options.Token);
+                await InternalClient.LoginAsync(TokenType.Bot, _botOptions.Token);
             }
 
             return InternalClient;
@@ -36,7 +40,7 @@ namespace Tibres
 
             message.Deconstruct(out var body, out var signature, out var timestamp);
 
-            return await client.ParseHttpInteractionAsync(_options.PublicKey, signature, timestamp, body, doApiCallOnCreation);
+            return await client.ParseHttpInteractionAsync(_botOptions.PublicKey, signature, timestamp, body, doApiCallOnCreation);
         }
     }
 }

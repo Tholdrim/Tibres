@@ -50,4 +50,5 @@ jobs:
             logsWorkspaceName=${{ vars.AZURE_LOGS_WORSKPACE }}
             storageAccountName=${{ vars.AZURE_STORAGE_ACCOUNT }}
             botPublicKey=${{ secrets.BOT_PUBLIC_KEY }}
-            botToken=${{ secrets.BOT_TOKEN}}
+            botToken=${{ secrets.BOT_TOKEN }}
+            serverId=${{ secrets.SERVER_ID }}
