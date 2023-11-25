@@ -9,14 +9,9 @@ using System.Threading.Tasks;
 
 namespace Tibres
 {
-    internal class ReceiveInteractionFunction
+    internal class ReceiveInteractionFunction(IDiscordClient discordClient)
     {
-        private readonly IDiscordClient _discordClient;
-
-        public ReceiveInteractionFunction(IDiscordClient discordClient)
-        {
-            _discordClient = discordClient;
-        }
+        private readonly IDiscordClient _discordClient = discordClient;
 
         [Function(Names.Functions.ReceiveInteraction)]
         public async Task<InteractionReceiptOutput> RunAsync(

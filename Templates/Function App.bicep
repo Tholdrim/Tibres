@@ -25,7 +25,7 @@ resource functionApp 'Microsoft.Web/sites@2022-09-01' = {
     siteConfig: {
       ftpsState: 'Disabled'
       http20Enabled: true
-      netFrameworkVersion: 'v7.0'
+      netFrameworkVersion: 'v8.0'
       functionAppScaleLimit: 1
       use32BitWorkerProcess: false
     }

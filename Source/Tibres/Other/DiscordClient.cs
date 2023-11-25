@@ -6,16 +6,10 @@ using System.Threading.Tasks;
 
 namespace Tibres
 {
-    internal class DiscordClient : IDiscordClient
+    internal class DiscordClient(IOptions<BotOptions> botOptions, IOptions<ServerOptions> serverOptions) : IDiscordClient
     {
-        private readonly BotOptions _botOptions;
-        private readonly ServerOptions _serverOptions;
-
-        public DiscordClient(IOptions<BotOptions> botOptions, IOptions<ServerOptions> serverOptions)
-        {
-            _botOptions = botOptions.Value;
-            _serverOptions = serverOptions.Value;
-        }
+        private readonly BotOptions _botOptions = botOptions.Value;
+        private readonly ServerOptions _serverOptions = serverOptions.Value;
 
         public ulong? ServerId => _serverOptions.Id;
 

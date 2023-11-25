@@ -5,20 +5,13 @@ using Tibres.Commands;
 
 namespace Tibres
 {
-    internal class HandleInteractionFunction
+    internal class HandleInteractionFunction(IDiscordClient discordClient, ICommandRepository commandRepository)
     {
-        private readonly IDiscordClient _discordClient;
-        private readonly ICommandRepository _commandRepository;
-
-        public HandleInteractionFunction(IDiscordClient discordClient, ICommandRepository commandRepository)
-        {
-            _discordClient = discordClient;
-            _commandRepository = commandRepository;
-        }
+        private readonly IDiscordClient _discordClient = discordClient;
+        private readonly ICommandRepository _commandRepository = commandRepository;
 
         [Function(Names.Functions.HandleInteraction)]
-        public async Task RunAsync(
-            [QueueTrigger(Names.Queues.Interactions)] InteractionMessage message)
+        public async Task RunAsync([QueueTrigger(Names.Queues.Interactions)] InteractionMessage message)
         {
             var interaction = await _discordClient.ParseHttpInteractionAsync(message, doApiCallOnCreation: _ => true);
 

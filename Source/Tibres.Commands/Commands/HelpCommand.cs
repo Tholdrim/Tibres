@@ -4,14 +4,9 @@ using System.Threading.Tasks;
 
 namespace Tibres.Commands
 {
-    internal class HelpCommand : Command
+    internal class HelpCommand(ICommandRepository commandRepository) : Command
     {
-        private readonly ICommandRepository _commandRepository;
-
-        public HelpCommand(ICommandRepository commandRepository)
-        {
-            _commandRepository = commandRepository;
-        }
+        private readonly ICommandRepository _commandRepository = commandRepository;
 
         public override string Name => "help";
 

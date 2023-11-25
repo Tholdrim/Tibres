@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
-      - name: Login to the Azure CLI
+      - name: Log in to the Azure CLI
         uses: azure/login@v1
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
@@ -30,8 +30,7 @@ jobs:
       - name: Checkout a repository
         uses: actions/checkout@v4
         with:
-          sparse-checkout: |
-            Templates
+          sparse-checkout: Templates
 
       - name: Set current date
         run: echo "CURRENT_DATE=$(date +'%Y-%m-%d')" >> ${GITHUB_ENV}

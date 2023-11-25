@@ -1,3 +1,4 @@
+param applicationInsightsName string
 param keyVaultName string
 param storageAccountName string
 
@@ -14,6 +15,10 @@ param serverId string
 
 var deployServerIdSecret = !empty(serverId)
 
+resource applicationInsights 'Microsoft.Insights/components@2020-02-02' existing = {
+  name: applicationInsightsName
+}
+
 resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' existing = {
   name: storageAccountName
 }
@@ -28,6 +33,14 @@ resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' = {
       name: 'standard'
     }
     tenantId: subscription().tenantId
+  }
+  
+  resource applicationInsightsConnectionStringSecret 'secrets@2022-07-01' = {
+    name: 'ApplicationInsightsConnectionString'
+    properties: {
+      contentType: 'string'
+      value: applicationInsights.properties.ConnectionString
+    }
   }
 
   resource botPublicKeySecret 'secrets@2022-07-01' = {
@@ -65,6 +78,7 @@ resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' = {
 }
 
 output secretUris object = {
+  applicationInsightsConnectionString: keyVault::applicationInsightsConnectionStringSecret.properties.secretUri
   botPublicKey: keyVault::botPublicKeySecret.properties.secretUri
   botToken: keyVault::botTokenSecret.properties.secretUri
   serverId: deployServerIdSecret ? keyVault::serverIdSecret.properties.secretUri : ''

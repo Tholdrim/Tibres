@@ -33,7 +33,7 @@ module appSettings 'App settings.bicep' = {
   params: {
     appServiceName: functionAppName
     appSettings: union({
-      APPINSIGHTS_INSTRUMENTATIONKEY: applicationInsights.outputs.instrumentationKey
+      APPLICATIONINSIGHTS_CONNECTION_STRING: '@Microsoft.KeyVault(SecretUri=${keyVault.outputs.secretUris.applicationInsightsConnectionString}/)'
       AzureWebJobsStorage__accountName: storageAccountName
       Bot__PublicKey: '@Microsoft.KeyVault(SecretUri=${keyVault.outputs.secretUris.botPublicKey}/)'
       Bot__Token: '@Microsoft.KeyVault(SecretUri=${keyVault.outputs.secretUris.botToken}/)'
@@ -43,6 +43,7 @@ module appSettings 'App settings.bicep' = {
       WEBSITE_CONTENTSHARE: functionAppName
       WEBSITE_ENABLE_SYNC_UPDATE_SITE: 'true'
       WEBSITE_RUN_FROM_PACKAGE: '1'
+      WEBSITE_USE_PLACEHOLDER_DOTNETISOLATED: '1'
     }, empty(keyVault.outputs.secretUris.serverId) ? {} : {
       Server__Id: '@Microsoft.KeyVault(SecretUri=${keyVault.outputs.secretUris.serverId}/)'
     })
@@ -62,6 +63,7 @@ module functionApp 'Function App.bicep' = {
 module keyVault 'Key Vault.bicep' = {
   name: '${deployment().name}-KeyVault'
   params: {
+    applicationInsightsName: applicationInsightsName
     keyVaultName: keyVaultName
     storageAccountName: storageAccountName
     location: location
@@ -69,7 +71,7 @@ module keyVault 'Key Vault.bicep' = {
     botToken: botToken
     serverId: serverId
   }
-  dependsOn: [ storageAccount ]
+  dependsOn: [ applicationInsights, storageAccount ]
 }
 
 module roleAssignments 'Role assignments.bicep' = {

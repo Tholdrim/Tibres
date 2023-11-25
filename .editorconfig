@@ -23,27 +23,12 @@ indent_style             = tab
 
 indent_size              = 4
 
-dotnet_analyzer_diagnostic.severity = default
+dotnet_diagnostic.IDE0290.severity   = silent
+dotnet_diagnostic.VSTHRD200.severity = error
+
 dotnet_sort_system_directives_first = false
 
 csharp_style_implicit_object_creation_when_type_is_apparent       = true:error
 
 dotnet_style_allow_multiple_blank_lines_experimental              = false:error
 dotnet_style_allow_statement_immediately_after_block_experimental = false:error
-
-# ~~~~~ Naming rules ~~~~~
-
-dotnet_naming_rule.async_methods_should_end_with_async.severity = error
-dotnet_naming_rule.async_methods_should_end_with_async.symbols  = async_methods
-dotnet_naming_rule.async_methods_should_end_with_async.style    = end_with_async
-
-# ~~~~~ Symbol specifications ~~~~~
-
-dotnet_naming_symbols.async_methods.applicable_kinds           = method
-dotnet_naming_symbols.async_methods.applicable_accessibilities = *
-dotnet_naming_symbols.async_methods.required_modifiers         = async
-
-# ~~~~~ Naming styles ~~~~~
-
-dotnet_naming_style.end_with_async.capitalization  = pascal_case
-dotnet_naming_style.end_with_async.required_suffix = Async

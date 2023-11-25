@@ -7,16 +7,10 @@ using Tibres.Commands;
 
 namespace Tibres
 {
-    internal class RegisterCommandsFunction
+    internal class RegisterCommandsFunction(IDiscordClient discordClient, ICommandRepository commandRepository)
     {
-        private readonly IDiscordClient _discordClient;
-        private readonly ICommandRepository _commandRepository;
-
-        public RegisterCommandsFunction(IDiscordClient discordClient, ICommandRepository commandRepository)
-        {
-            _discordClient = discordClient;
-            _commandRepository = commandRepository;
-        }
+        private readonly IDiscordClient _discordClient = discordClient;
+        private readonly ICommandRepository _commandRepository = commandRepository;
 
         [Function(Names.Functions.RegisterCommands)]
         public async Task<HttpResponseData> RunAsync(

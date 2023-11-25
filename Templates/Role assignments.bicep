@@ -12,7 +12,7 @@ var roles = {
   storageAccount: items({
     'Storage Account Contributor': '17d1049b-9a84-46fb-8f53-869881c3d3ab'
     'Storage Blob Data Contributor': 'ba92f5b4-2d11-453d-a403-e96b0029c9fe'
-    'storage Queue Data Contributor': '974c5e8b-45b9-4653-ba55-5f855dd0fb88'
+    'Storage Queue Data Contributor': '974c5e8b-45b9-4653-ba55-5f855dd0fb88'
   })
 }
 
