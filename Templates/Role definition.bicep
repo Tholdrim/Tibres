@@ -27,6 +27,9 @@ resource roleDefinition 'Microsoft.Authorization/roleDefinitions@2022-04-01' = {
           'Microsoft.Resources/deployments/validate/action'
           'Microsoft.Resources/deployments/write'
           'Microsoft.Resources/subscriptions/resourceGroups/read'
+          'Microsoft.Storage/storageAccounts/blobServices/containers/read'
+          'Microsoft.Storage/storageAccounts/blobServices/containers/write'
+          'Microsoft.Storage/storageAccounts/blobServices/write'
           'Microsoft.Storage/storageAccounts/listKeys/action'
           'Microsoft.Storage/storageAccounts/write'
           'Microsoft.Web/serverfarms/write'
@@ -36,6 +39,10 @@ resource roleDefinition 'Microsoft.Authorization/roleDefinitions@2022-04-01' = {
           'Microsoft.Web/sites/publishxml/action'
           'Microsoft.Web/sites/read'
           'Microsoft.Web/sites/write'
+        ]
+        dataActions: [
+          'Microsoft.Storage/storageAccounts/blobServices/containers/blobs/read'
+          'Microsoft.Storage/storageAccounts/blobServices/containers/blobs/write'
         ]
       }
     ]

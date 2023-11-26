@@ -12,4 +12,12 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
   properties: {
     allowBlobPublicAccess: false
   }
+
+  resource blobServices 'blobServices@2022-09-01' = {
+    name: 'default'
+
+    resource emojisContainer 'containers@2022-09-01' = {
+      name: 'emojis'
+    }
+  }
 }

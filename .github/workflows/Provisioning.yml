@@ -30,7 +30,9 @@ jobs:
       - name: Checkout a repository
         uses: actions/checkout@v4
         with:
-          sparse-checkout: Templates
+          sparse-checkout: |
+            Resources
+            Templates
 
       - name: Set current date
         run: echo "CURRENT_DATE=$(date +'%Y-%m-%d')" >> ${GITHUB_ENV}
@@ -51,3 +53,17 @@ jobs:
             botPublicKey=${{ secrets.BOT_PUBLIC_KEY }}
             botToken=${{ secrets.BOT_TOKEN }}
             serverId=${{ secrets.SERVER_ID }}
+
+      - name: Upload emojis
+        run: |
+          for entry in Resources/Emojis/*.png
+          do
+            file="${entry##*/}"
+
+            az storage fs file upload --file-system emojis \
+                                      --path ${file,,} \
+                                      --source $entry \
+                                      --account-name ${{ vars.AZURE_STORAGE_ACCOUNT }} \
+                                      --content-type image/png \
+                                      --auth-mode login
+          done

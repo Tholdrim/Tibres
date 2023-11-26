@@ -15,4 +15,4 @@ Tibres is a Discord bot that makes it easier to track a player's advancement in 
 
 ## Credits
 
-The bot's avatar was created using the [Discord Avatar Maker](https://discord-avatar-maker.app) tool.
+The bot's avatar was created using the [Discord Avatar Maker](https://discord-avatar-maker.app) tool, and the icons that appear in the bot's messages were created by [Fathema Khanom - Flaticon](https://www.flaticon.com/packs/user-interface-2550).
