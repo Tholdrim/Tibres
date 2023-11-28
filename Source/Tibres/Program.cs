@@ -5,8 +5,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System.Text.Json;
-using Tibres;
 using Tibres.Commands;
+using Tibres.Discord;
 
 var host = new HostBuilder()
     .ConfigureFunctionsWorkerDefaults()
@@ -21,11 +21,7 @@ static void ConfigureServices(HostBuilderContext context, IServiceCollection ser
     services.AddApplicationInsightsTelemetryWorkerService();
 
     services.AddCommands();
-
-    services.AddSingleton<IDiscordClient, DiscordClient>();
-
-    services.AddOptions<BotOptions>(context.Configuration.GetSection(BotOptions.SectionName));
-    services.AddOptions<ServerOptions>(context.Configuration.GetSection(ServerOptions.SectionName));
+    services.AddDiscord();
 
     services.ConfigureFunctionsApplicationInsights();
 

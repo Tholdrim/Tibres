@@ -13,18 +13,24 @@
     <UserSecretsId>edc54545-3ad9-4156-aa49-8520d584386e</UserSecretsId>
   </PropertyGroup>
   <ItemGroup>
+    <Using Alias="Emoji" Include="Tibres.Discord.Emoji" />
+    <Using Alias="IDiscordClient" Include="Tibres.Discord.IDiscordClient" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="Microsoft.ApplicationInsights.WorkerService" Version="2.21.0" />
     <PackageReference Include="Microsoft.Azure.Functions.Worker" Version="1.20.0" />
     <PackageReference Include="Microsoft.Azure.Functions.Worker.ApplicationInsights" Version="1.1.0" />
     <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Http" Version="3.1.0" />
+    <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Storage.Blobs" Version="6.2.0" />
     <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Storage.Queues" Version="5.2.0" />
+    <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Timer" Version="4.3.0" />
     <PackageReference Include="Microsoft.Azure.Functions.Worker.Sdk" Version="1.16.2" />
     <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Options.DataAnnotations" Version="8.0.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Tibres.Commands\Tibres.Commands.csproj" />
+    <ProjectReference Include="..\Tibres.Discord\Tibres.Discord.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Update="host.json">

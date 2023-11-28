@@ -2,13 +2,15 @@ using Discord.Rest;
 using Microsoft.Azure.Functions.Worker;
 using System.Threading.Tasks;
 using Tibres.Commands;
+using Tibres.Discord;
 
 namespace Tibres
 {
-    internal class HandleInteractionFunction(IDiscordClient discordClient, ICommandRepository commandRepository)
+    internal class HandleInteractionFunction(IDiscordClient discordClient, ICommandRepository commandRepository, IEmojiRepository emojiRepository)
     {
         private readonly IDiscordClient _discordClient = discordClient;
         private readonly ICommandRepository _commandRepository = commandRepository;
+        private readonly IEmojiRepository _emojiRepository = emojiRepository;
 
         [Function(Names.Functions.HandleInteraction)]
         public async Task RunAsync([QueueTrigger(Names.Queues.Interactions)] InteractionMessage message)
@@ -19,7 +21,9 @@ namespace Tibres
             {
                 // TODO: Log warning
 
-                await interaction.DeleteOriginalResponseAsync();
+                var errorEmoji = await _emojiRepository.GetEmojiAsync(Emoji.Error);
+
+                await interaction.FollowupAsync(errorEmoji + "I do not know how to handle this command.");
 
                 return;
             }

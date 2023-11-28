@@ -1,4 +1,4 @@
-namespace Tibres
+namespace Tibres.Discord
 {
     internal class ServerOptions
     {

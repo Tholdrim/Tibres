@@ -39,6 +39,7 @@ module appSettings 'App settings.bicep' = {
       Bot__Token: '@Microsoft.KeyVault(SecretUri=${keyVault.outputs.secretUris.botToken}/)'
       FUNCTIONS_EXTENSION_VERSION: '~4'
       FUNCTIONS_WORKER_RUNTIME: 'dotnet-isolated'
+      InitializationFrequency: '0 0 0 * * *'
       WEBSITE_CONTENTAZUREFILECONNECTIONSTRING: '@Microsoft.KeyVault(SecretUri=${keyVault.outputs.secretUris.storageAccountConnectionString}/)'
       WEBSITE_CONTENTSHARE: functionAppName
       WEBSITE_ENABLE_SYNC_UPDATE_SITE: 'true'

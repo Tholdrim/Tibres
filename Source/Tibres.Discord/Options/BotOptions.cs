@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Tibres
+namespace Tibres.Discord
 {
     internal class BotOptions
     {
