@@ -11,7 +11,7 @@ permissions:
   id-token: write
 
 env:
-  OUTPUT_DIRECTORY: ./Output
+  OUTPUT_DIRECTORY: .\Output
 
 concurrency:
   group: ${{ github.workflow }}
@@ -23,26 +23,37 @@ jobs:
     runs-on: windows-latest
     steps:
 
+      - name: Checkout a repository
+        uses: actions/checkout@v3
+        with:
+          sparse-checkout: Source
+
+      - name: Scan packages for vulnerabilities
+        run: |
+          cd .\Source
+          dotnet restore
+          dotnet list package --vulnerable --include-transitive | Out-String | Tee-Object -Variable 'output' 
+
+          # TODO: https://github.com/NuGet/Home/issues/11315
+          if ($output.Contains('has the following vulnerable packages')) {
+            throw
+          }
+
+      - name: Publish a project
+        run: |
+          dotnet publish .\Source\Tibres\Tibres.csproj --output ${{ env.OUTPUT_DIRECTORY }} `
+                                                       --configuration Release `
+                                                       --runtime win-x64 `
+                                                       --no-self-contained `
+                                                       -p:PublishReadyToRun=true `
+                                                       -p:PublishReadyToRunShowWarnings=true
+
       - name: Log in to the Azure CLI
         uses: azure/login@v1
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-
-      - name: Checkout a repository
-        uses: actions/checkout@v3
-        with:
-          sparse-checkout: Source
-
-      - name: Publish a project
-        run: |
-          dotnet publish ./Source/Tibres/Tibres.csproj --output ${{ env.OUTPUT_DIRECTORY }} `
-                                                       --configuration Release `
-                                                       --runtime win-x64 `
-                                                       --no-self-contained `
-                                                       -p:PublishReadyToRun=true `
-                                                       -p:PublishReadyToRunShowWarnings=true
 
       - name: Deploy a function app
         uses: Azure/functions-action@v1
