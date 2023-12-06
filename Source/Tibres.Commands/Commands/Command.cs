@@ -11,8 +11,6 @@ namespace Tibres.Commands
 
         public abstract string Description { get; }
 
-        public abstract string Summary { get; }
-
         public abstract Task HandleInteractionAsync(ISlashCommandInteraction slashCommand);
 
         internal SlashCommandProperties GetCommandProperties()

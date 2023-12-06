@@ -16,7 +16,7 @@ namespace Tibres.Discord
             {
                 var emote = await GetEmoteAsync(emoji);
 
-                result = Cache.GetOrAdd(emoji, _ => emote.ToMarkdown());
+                result = Cache.GetOrAdd(emoji, _ => emoji.ToMarkdown(emote));
             }
             
             return result;
@@ -24,7 +24,7 @@ namespace Tibres.Discord
 
         public void UpdateEmoji(Emoji emoji, GuildEmote emote)
         {
-            Cache[emoji] = emote.ToMarkdown();
+            Cache[emoji] = emoji.ToMarkdown(emote);
         }
 
         private async Task<GuildEmote?> GetEmoteAsync(Emoji emoji)

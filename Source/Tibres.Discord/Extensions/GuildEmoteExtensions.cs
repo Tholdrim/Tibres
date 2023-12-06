@@ -12,7 +12,5 @@ namespace Tibres.Discord
 
             return emotes.FirstOrDefault(e => e.CreatorId == creatorId && e.Name == name);
         }
-
-        public static string ToMarkdown(this GuildEmote? emote) => emote != null ? $" {emote} " : string.Empty;
     }
 }
