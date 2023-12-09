@@ -5,7 +5,5 @@ namespace Tibres.Commands
         string Name { get; }
 
         string Category { get; }
-
-        string Description { get; }
     }
 }

@@ -1,7 +1,5 @@
 using Discord;
 using Discord.Rest;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Tibres.Discord;
@@ -13,7 +11,7 @@ namespace Tibres.Commands
         private readonly IDiscordClient _discordClient = discordClient;
         private readonly IEmojiRepository _emojiRepository = emojiRepository;
 
-        public override string Name => "permissions";
+        public override string Name => Names.Commands.Permissions;
 
         public override string Category => Categories.Administrative;
 
@@ -21,12 +19,8 @@ namespace Tibres.Commands
 
         public override async Task HandleInteractionAsync(ISlashCommandInteraction slashCommand)
         {
-            if (slashCommand.GuildId is not ulong guildId)
-            {
-                throw new NotSupportedException();
-            }
-
-            var guild = await _discordClient.GetGuildAsync(guildId) ?? throw new UnknownGuildException(guildId);
+            var guild = await _discordClient.GetGuildAsync(slashCommand.GetGuildId());
+            var permissionGroups = GetGroupedPermissions(guild.Id);
             var bot = await guild.GetCurrentUserAsync();
 
             var embedBuilder = new EmbedBuilder()
@@ -34,13 +28,14 @@ namespace Tibres.Commands
                 .WithDescription("This bot uses the following permissions:")
                 .WithColor(Color.Gold);
 
-            foreach (var permissionGroup in GetGroupedPermissions(guildId))
+            foreach (var permissionGroup in permissionGroups.OrderBy(k => k.Key))
             {
+                var suffix = embedBuilder.Fields.Count != permissionGroups.Count - 1 ? ";" : ".";
                 var lines = await Task.WhenAll(permissionGroup.Select(p => GetPermissionLineAsync(p, bot)));
 
                 var embedFieldBuilder = new EmbedFieldBuilder()
                     .WithName(permissionGroup.Key)
-                    .WithValue(string.Join("\n", lines));
+                    .WithValue(string.Join(";\n", lines) + suffix);
 
                 embedBuilder.AddField(embedFieldBuilder);
             }
@@ -56,12 +51,11 @@ namespace Tibres.Commands
                 .Build();
         }
 
-        private IEnumerable<IGrouping<string, Permission>> GetGroupedPermissions(ulong guildId)
+        private ILookup<string, Permission> GetGroupedPermissions(ulong guildId)
         {
-            return Permissions.All
+            return Permissions.GetAll()
                 .Where(p => p.Filter?.Invoke(_discordClient.MainGuildId, guildId) ?? true)
-                .GroupBy(p => p.IsOptional ? "Optional" : "Essential")
-                .OrderBy(g => g.Key);
+                .ToLookup(p => p.IsOptional ? "Optional" : "Essential");
         }
 
         private async Task<string> GetPermissionLineAsync(Permission permission, RestGuildUser user)

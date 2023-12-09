@@ -9,7 +9,7 @@ namespace Tibres.Discord
     {
         ulong? MainGuildId { get; }
 
-        Task<RestGuild?> GetGuildAsync(ulong guildId);
+        Task<RestGuild> GetGuildAsync(ulong guildId);
 
         Task<RestGuild?> GetMainGuildAsync();
 

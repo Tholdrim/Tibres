@@ -3,14 +3,22 @@ using System;
 
 namespace Tibres.Commands
 {
-    internal record Permission(string Name)
+    internal record Permission(string Name) : IPermission
     {
-        public required string Description { get; init; }
+        internal required string Description { get; init; }
 
-        public required Func<GuildPermissions, bool> Selector { get; init; }
+        internal required Func<GuildPermissions, bool> Selector { get; init; }
 
-        public Func<ulong?, ulong, bool>? Filter { get; init; }
+        internal Func<ulong?, ulong, bool>? Filter { get; init; }
 
-        public bool IsOptional { get; init; } = false;
+        internal bool IsOptional { get; init; } = false;
+
+        void IPermission.CheckIfGranted(GuildPermissions permissions)
+        {
+            if (!Selector(permissions))
+            {
+                throw new PermissionException(this);
+            }
+        }
     };
 }

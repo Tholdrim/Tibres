@@ -35,24 +35,19 @@ namespace Tibres
 
         private async Task UploadEmojisAsync(BlobContainerClient blobContainerClient)
         {
-            if (_discordClient.MainGuildId is not ulong guildId)
+            var guild = await _discordClient.GetMainGuildAsync();
+
+            if (guild == null)
             {
                 // TODO: Log information
 
                 return;
             }
 
-            var guild = await _discordClient.GetGuildAsync(guildId) ?? throw new UnknownGuildException(guildId);
             var bot = await guild.GetCurrentUserAsync();
-
-            if (!bot.GuildPermissions.ManageEmojisAndStickers)
-            {
-                // TODO: Log warning
-
-                return;
-            }
-
             var emotes = await guild.GetEmotesAsync();
+
+            Permissions.ManageExpressions.CheckIfGranted(bot.GuildPermissions);
 
             foreach (var emoji in Enum.GetValues<Emoji>())
             {

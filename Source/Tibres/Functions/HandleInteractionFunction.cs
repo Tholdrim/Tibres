@@ -1,4 +1,3 @@
-using Discord;
 using Discord.Rest;
 using Microsoft.Azure.Functions.Worker;
 using System;
@@ -20,32 +19,24 @@ namespace Tibres
 
             try
             {
-                if (interaction is RestSlashCommand slashCommand && _commandRepository.TryGetCommand(slashCommand.Data.Name, out var command))
+                if (interaction is not RestSlashCommand slashCommand || !_commandRepository.TryGetCommand(slashCommand.Data.Name, out var command))
                 {
-                    await command.HandleInteractionAsync(slashCommand);
-
-                    return;
+                    throw new UnknownCommandException();
                 }
 
-                // TODO: Log warning
-
-                await ShowErrorMessageAsync(interaction, "The specified command was not recognized.");
+                await command.HandleInteractionAsync(slashCommand);
             }
             catch (Exception exception)
             {
-                await ShowErrorMessageAsync(interaction, exception.Message);
+                var formattedException = exception as FormattedException;
+
+                if (exception is UnexpectedException)
+                {
+                    // TODO: Log error
+                }
+
+                await interaction.ShowErrorMessageAsync(formattedException?.FormattedMessage ?? exception.Message);
             }
-        }
-
-        private static Task<RestFollowupMessage> ShowErrorMessageAsync(RestInteraction interaction, string message)
-        {
-            var embedBuilder = new EmbedBuilder()
-                .WithTitle("Error")
-                .WithDescription(message)
-                .WithFooter("If the problem persists, please report it.")
-                .WithColor(Color.Red);
-
-            return interaction.FollowupAsync(embed: embedBuilder.Build());
         }
     }
 }

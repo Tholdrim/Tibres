@@ -6,6 +6,6 @@ namespace Tibres.Discord
     {
         public static string ToName(this Emoji emoji) => emoji.ToString().ToLower();
 
-        public static string ToMarkdown(this Emoji emoji, GuildEmote? emote) => emote?.ToString() ?? $":{emoji.ToName()}:";
+        internal static string ToMarkdown(this Emoji emoji, GuildEmote? emote) => emote?.ToString() ?? $":{emoji.ToName()}:";
     }
 }

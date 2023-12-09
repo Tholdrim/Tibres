@@ -8,7 +8,7 @@ namespace Tibres.Commands
     {
         private readonly ICommandRepository _commandRepository = commandRepository;
 
-        public override string Name => "about";
+        public override string Name => Names.Commands.About;
 
         public override string Category => Categories.Other;
 
