@@ -1,6 +1,5 @@
 using Azure.Storage.Blobs;
 using Discord;
-using Discord.Rest;
 using Microsoft.Azure.Functions.Worker;
 using System;
 using System.Diagnostics.CodeAnalysis;
@@ -44,20 +43,20 @@ namespace Tibres
                 return;
             }
 
-            var bot = await guild.GetCurrentUserAsync();
             var emotes = await guild.GetEmotesAsync();
+            var user = await guild.GetCurrentUserAsync();
 
-            Permissions.ManageExpressions.CheckIfGranted(bot.GuildPermissions);
+            Permissions.ManageExpressions.CheckIfGranted(user.GuildPermissions);
 
             foreach (var emoji in Enum.GetValues<Emoji>())
             {
-                var emote = emotes.FindBotEmoji(emoji, bot.Id) ?? await UploadEmojiAsync(blobContainerClient, guild, emoji.ToName());
+                var emote = emotes.FindEmoji(emoji, creatorId: user.Id) ?? await UploadEmojiAsync(blobContainerClient, guild, emoji.ToName());
 
                 _emojiRepository.UpdateEmoji(emoji, emote);
             }
         }
 
-        private static async Task<GuildEmote> UploadEmojiAsync(BlobContainerClient blobContainerClient, RestGuild guild, string name)
+        private static async Task<IEmote> UploadEmojiAsync(BlobContainerClient blobContainerClient, IGuild guild, string name)
         {
             var blob = blobContainerClient.GetBlobClient($"{name}.png");
 

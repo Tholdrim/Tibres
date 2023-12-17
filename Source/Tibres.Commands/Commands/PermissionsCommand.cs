@@ -17,30 +17,16 @@ namespace Tibres.Commands
 
         public override string Description => "Lists the essential and optional permissions used by the bot along with their grant status.";
 
-        public override async Task HandleInteractionAsync(ISlashCommandInteraction slashCommand)
+        public override async Task HandleInteractionAsync(RestSlashCommand command)
         {
-            var guild = await _discordClient.GetGuildAsync(slashCommand.GetGuildId());
-            var permissionGroups = GetGroupedPermissions(guild.Id);
-            var bot = await guild.GetCurrentUserAsync();
-
             var embedBuilder = new EmbedBuilder()
                 .WithTitle("Permissions")
                 .WithDescription("This bot uses the following permissions:")
                 .WithColor(Color.Gold);
 
-            foreach (var permissionGroup in permissionGroups.OrderBy(k => k.Key))
-            {
-                var suffix = embedBuilder.Fields.Count != permissionGroups.Count - 1 ? ";" : ".";
-                var lines = await Task.WhenAll(permissionGroup.Select(p => GetPermissionLineAsync(p, bot)));
+            await AddPermissionGroupFieldsAsync(embedBuilder, command.Guild);
 
-                var embedFieldBuilder = new EmbedFieldBuilder()
-                    .WithName(permissionGroup.Key)
-                    .WithValue(string.Join(";\n", lines) + suffix);
-
-                embedBuilder.AddField(embedFieldBuilder);
-            }
-
-            await slashCommand.FollowupAsync(embed: embedBuilder.Build());
+            await command.FollowupAsync(embed: embedBuilder.Build());
         }
 
         protected override SlashCommandProperties BuildCommandProperties(SlashCommandBuilder slashCommandBuilder)
@@ -51,19 +37,37 @@ namespace Tibres.Commands
                 .Build();
         }
 
-        private ILookup<string, Permission> GetGroupedPermissions(ulong guildId)
+        private async Task AddPermissionGroupFieldsAsync(EmbedBuilder embedBuilder, IGuild guild)
         {
-            return Permissions.GetAll()
-                .Where(p => p.Filter?.Invoke(_discordClient.MainGuildId, guildId) ?? true)
-                .ToLookup(p => p.IsOptional ? "Optional" : "Essential");
+            var user = await guild.GetCurrentUserAsync();
+            var permissionGroups = GetGroupedPermissions(guild.Id);
+
+            foreach (var (permissionGroup, index) in permissionGroups.OrderBy(k => k.Key).WithIndex())
+            {
+                var suffix = index != permissionGroups.Count - 1 ? ";" : ".";
+                var lines = await Task.WhenAll(permissionGroup.Select(p => FormatPermissionLineAsync(p, user)));
+
+                var embedFieldBuilder = new EmbedFieldBuilder()
+                    .WithName(permissionGroup.Key)
+                    .WithValue(string.Join(";\n", lines) + suffix);
+
+                embedBuilder.AddField(embedFieldBuilder);
+            }
         }
 
-        private async Task<string> GetPermissionLineAsync(Permission permission, RestGuildUser user)
+        private async Task<string> FormatPermissionLineAsync(Permission permission, IGuildUser user)
         {
             var isGranted = permission.Selector(user.GuildPermissions);
             var emoji = await _emojiRepository.GetEmojiAsync(isGranted ? Emoji.Check : Emoji.Error);
 
             return $"- {emoji} **{permission.Name}** {permission.Description}";
+        }
+
+        private ILookup<string, Permission> GetGroupedPermissions(ulong guildId)
+        {
+            return Permissions.GetAll()
+                .Where(p => p.Filter?.Invoke(_discordClient.MainGuildId, guildId) ?? true)
+                .ToLookup(p => p.IsOptional ? "Optional" : "Essential");
         }
     };
 }

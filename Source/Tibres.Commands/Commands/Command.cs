@@ -1,4 +1,5 @@
 using Discord;
+using Discord.Rest;
 using System.Threading.Tasks;
 
 namespace Tibres.Commands
@@ -11,7 +12,7 @@ namespace Tibres.Commands
 
         public abstract string Description { get; }
 
-        public abstract Task HandleInteractionAsync(ISlashCommandInteraction slashCommand);
+        public abstract Task HandleInteractionAsync(RestSlashCommand command);
 
         internal SlashCommandProperties GetCommandProperties()
         {

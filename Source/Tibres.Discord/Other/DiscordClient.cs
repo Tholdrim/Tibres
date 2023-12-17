@@ -15,26 +15,21 @@ namespace Tibres.Discord
 
         private DiscordRestClient InternalClient { get; } = new();
 
-        public async Task<RestGuild> GetGuildAsync(ulong guildId)
-        {
-            var guild = await GetOptionalGuildAsync(guildId);
-
-            return guild ?? throw new UnknownGuildException(guildId);
-        }
-
-        public Task<RestGuild?> GetMainGuildAsync()
+        public async Task<IGuild?> GetMainGuildAsync()
         {
             if (MainGuildId is not ulong guildId)
             {
-                return Task.FromResult<RestGuild?>(null);
+                return null;
             }
 
-            return GetOptionalGuildAsync(guildId);
+            var client = await GetInternalClientAsync();
+
+            return await client.GetGuildAsync(guildId);
         }
 
-        public async Task<RestInteraction> ParseHttpInteractionAsync(
+        public async Task<IDiscordInteraction> ParseHttpInteractionAsync(
             InteractionMessage message,
-            Func<InteractionProperties, bool>? doApiCallOnCreation = null)
+            Func<InteractionProperties, bool>? doApiCallOnCreation)
         {
             var client = await GetInternalClientAsync();
 
@@ -43,7 +38,7 @@ namespace Tibres.Discord
             return await client.ParseHttpInteractionAsync(_botOptions.PublicKey, signature, timestamp, body, doApiCallOnCreation);
         }
 
-        public async Task RegisterSlashCommandsAsync(SlashCommandProperties[] commandProperties)
+        public async Task RegisterSlashCommandsAsync(ApplicationCommandProperties[] commandProperties)
         {
             var client = await GetInternalClientAsync();
 
@@ -59,13 +54,6 @@ namespace Tibres.Discord
             }
 
             return InternalClient;
-        }
-
-        private async Task<RestGuild?> GetOptionalGuildAsync(ulong guildId)
-        {
-            var client = await GetInternalClientAsync();
-
-            return await client.GetGuildAsync(guildId);
         }
     }
 }

@@ -1,4 +1,5 @@
 using Discord;
+using Discord.Rest;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -14,7 +15,7 @@ namespace Tibres.Commands
 
         public override string Description => "Displays a brief description of the bot and information about available commands.";
 
-        public override Task HandleInteractionAsync(ISlashCommandInteraction slashCommand)
+        public override Task HandleInteractionAsync(RestSlashCommand command)
         {
             var embedBuilder = new EmbedBuilder()
                .WithTitle("Tibres")
@@ -28,7 +29,7 @@ namespace Tibres.Commands
             AddCommandCategoryFields(embedBuilder);
             AddContactField(embedBuilder);
 
-            return slashCommand.FollowupAsync(embed: embedBuilder.Build());
+            return command.FollowupAsync(embed: embedBuilder.Build());
         }
 
         protected override SlashCommandProperties BuildCommandProperties(SlashCommandBuilder slashCommandBuilder)

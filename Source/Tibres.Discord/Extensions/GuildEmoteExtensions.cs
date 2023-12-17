@@ -6,7 +6,7 @@ namespace Tibres.Discord
 {
     public static class GuildEmoteExtensions
     {
-        public static GuildEmote? FindBotEmoji(this IEnumerable<GuildEmote> emotes, Emoji emoji, ulong creatorId)
+        public static IEmote? FindEmoji(this IEnumerable<GuildEmote> emotes, Emoji emoji, ulong creatorId)
         {
             var name = emoji.ToName();
 

@@ -1,10 +1,10 @@
-using Discord;
+using Discord.Rest;
 using System.Threading.Tasks;
 
 namespace Tibres.Commands
 {
     public interface ICommand
     {
-        Task HandleInteractionAsync(ISlashCommandInteraction slashCommand);
+        Task HandleInteractionAsync(RestSlashCommand command);
     }
 }

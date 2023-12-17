@@ -7,6 +7,6 @@ namespace Tibres.Discord
     {
         Task<string> GetEmojiAsync(Emoji emoji);
 
-        void UpdateEmoji(Emoji emoji, GuildEmote emote);
+        void UpdateEmoji(Emoji emoji, IEmote emote);
     }
 }

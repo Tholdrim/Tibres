@@ -22,12 +22,12 @@ namespace Tibres.Discord
             return result;
         }
 
-        public void UpdateEmoji(Emoji emoji, GuildEmote emote)
+        public void UpdateEmoji(Emoji emoji, IEmote emote)
         {
             Cache[emoji] = emoji.ToMarkdown(emote);
         }
 
-        private async Task<GuildEmote?> GetEmoteAsync(Emoji emoji)
+        private async Task<IEmote?> GetEmoteAsync(Emoji emoji)
         {
             var guild = await _discordClient.GetMainGuildAsync();
 
@@ -36,10 +36,10 @@ namespace Tibres.Discord
                 return null;
             }
 
-            var bot = await guild.GetCurrentUserAsync();
             var emotes = await guild.GetEmotesAsync();
+            var user = await guild.GetCurrentUserAsync();
 
-            return emotes.FindBotEmoji(emoji, bot.Id);
+            return emotes.FindEmoji(emoji, creatorId: user.Id);
         }
     }
 }
