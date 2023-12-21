@@ -1,6 +1,7 @@
 using Discord;
 using Discord.Rest;
 using System.Threading.Tasks;
+using Tibres.Discord;
 
 namespace Tibres.Commands
 {
@@ -10,7 +11,7 @@ namespace Tibres.Commands
 
         public abstract string Category { get; }
 
-        public abstract string Description { get; }
+        public virtual string Description => "Empty";
 
         public abstract Task HandleInteractionAsync(RestSlashCommand command);
 
@@ -24,5 +25,17 @@ namespace Tibres.Commands
         }
 
         protected abstract SlashCommandProperties BuildCommandProperties(SlashCommandBuilder slashCommandBuilder);
+
+        protected EmbedBuilder CreateEmbedBuilder()
+        {
+            var color = Category switch
+            {
+                Categories.Administrative => Color.DarkGreen,
+                Categories.Other          => Color.LightGrey,
+                _                         => throw new UnexpectedException()
+            };
+
+            return new EmbedBuilder().WithColor(color);
+        }
     }
 }

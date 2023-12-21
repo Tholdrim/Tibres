@@ -1,3 +1,4 @@
+using Discord;
 using Discord.Rest;
 using Microsoft.Azure.Functions.Worker;
 using System;
@@ -28,14 +29,19 @@ namespace Tibres
             }
             catch (Exception exception)
             {
-                var formattedException = exception as FormattedException;
+                var embedBuilder = new EmbedBuilder()
+                    .WithTitle("Error")
+                    .WithDescription(exception is FormattedException formattedException ? formattedException.FormattedMessage : exception.Message)
+                    .WithColor(Color.Red);
 
                 if (exception is UnexpectedException)
                 {
                     // TODO: Log error
+
+                    embedBuilder.WithFooter("If the problem persists, please report it.");
                 }
 
-                await interaction.ShowErrorMessageAsync(formattedException?.FormattedMessage ?? exception.Message);
+                await interaction.FollowupAsync(embed: embedBuilder.Build());
             }
         }
     }

@@ -19,10 +19,9 @@ namespace Tibres.Commands
 
         public override async Task HandleInteractionAsync(RestSlashCommand command)
         {
-            var embedBuilder = new EmbedBuilder()
+            var embedBuilder = CreateEmbedBuilder()
                 .WithTitle("Permissions")
-                .WithDescription("This bot uses the following permissions:")
-                .WithColor(Color.Gold);
+                .WithDescription("This bot uses the following permissions:");
 
             await AddPermissionGroupFieldsAsync(embedBuilder, command.Guild);
 

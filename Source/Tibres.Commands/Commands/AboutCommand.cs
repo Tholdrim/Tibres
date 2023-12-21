@@ -17,14 +17,13 @@ namespace Tibres.Commands
 
         public override Task HandleInteractionAsync(RestSlashCommand command)
         {
-            var embedBuilder = new EmbedBuilder()
-               .WithTitle("Tibres")
-               .WithDescription("It is an open-source Discord bot that makes it easier to track a player's advancement in the MMORPG Tibia. " +
-                                "The program retrieves and saves the results of individual characters. These are then used, among other things, " +
-                                "to generate monthly progress reports introducing an element of competition among server members and " +
+            var embedBuilder = CreateEmbedBuilder()
+               .WithTitle("About")
+               .WithDescription("**Tibres** is an open-source Discord bot that makes it easier to track a player's advancement in the MMORPG " +
+                                "Tibia. The program retrieves and saves the results of individual characters. These are then used, among other " +
+                                "things, to generate monthly progress reports introducing an element of competition among server members and " +
                                 "encouraging them to work harder.")
-               .WithFooter("If you enjoy the bot, please show your support by giving the GitHub repository a star.")
-               .WithColor(Color.LightGrey);
+               .WithFooter("If you enjoy the bot, please show your support by giving the GitHub repository a star.");
 
             AddCommandCategoryFields(embedBuilder);
             AddContactField(embedBuilder);

@@ -12,6 +12,13 @@ namespace Tibres.Commands
             IsOptional = true
         };
 
+        public static readonly IPermission ManageWebhooks = new Permission("Manage Webhooks")
+        {
+            Description = "to create webhooks used for automatic messaging",
+            Selector = p => p.ManageWebhooks,
+            IsOptional = true
+        };
+
         public static readonly IPermission UseExternalEmoji = new Permission("Use External Emoji")
         {
             Description = "to display custom emojis",
@@ -23,6 +30,7 @@ namespace Tibres.Commands
         internal static IEnumerable<Permission> GetAll()
         {
             yield return (Permission)ManageExpressions;
+            yield return (Permission)ManageWebhooks;
             yield return (Permission)UseExternalEmoji;
         }
     }
