@@ -15,7 +15,7 @@ namespace Tibres.Discord
 
         private DiscordRestClient InternalClient { get; } = new();
 
-        public async Task<IGuild?> GetMainGuildAsync()
+        public async Task<RestGuild?> GetMainGuildAsync()
         {
             if (MainGuildId is not ulong guildId)
             {
@@ -27,7 +27,7 @@ namespace Tibres.Discord
             return await client.GetGuildAsync(guildId);
         }
 
-        public async Task<IDiscordInteraction> ParseHttpInteractionAsync(
+        public async Task<RestInteraction> ParseHttpInteractionAsync(
             InteractionMessage message,
             Func<InteractionProperties, bool>? doApiCallOnCreation)
         {

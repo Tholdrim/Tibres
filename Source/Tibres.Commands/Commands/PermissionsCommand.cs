@@ -36,7 +36,7 @@ namespace Tibres.Commands
                 .Build();
         }
 
-        private async Task AddPermissionGroupFieldsAsync(EmbedBuilder embedBuilder, IGuild guild)
+        private async Task AddPermissionGroupFieldsAsync(EmbedBuilder embedBuilder, RestGuild guild)
         {
             var user = await guild.GetCurrentUserAsync();
             var permissionGroups = GetGroupedPermissions(guild.Id);
@@ -54,7 +54,7 @@ namespace Tibres.Commands
             }
         }
 
-        private async Task<string> FormatPermissionLineAsync(Permission permission, IGuildUser user)
+        private async Task<string> FormatPermissionLineAsync(Permission permission, RestGuildUser user)
         {
             var isGranted = permission.Selector(user.GuildPermissions);
             var emoji = await _emojiRepository.GetEmojiAsync(isGranted ? Emoji.Check : Emoji.Error);

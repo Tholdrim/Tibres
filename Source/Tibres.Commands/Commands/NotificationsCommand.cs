@@ -1,13 +1,16 @@
 using Discord;
 using Discord.Rest;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Tibres.Discord;
 
 namespace Tibres.Commands
 {
-    internal class NotificationsCommand : Command
+    internal class NotificationsCommand(IHttpClientFactory httpClientFactory) : Command
     {
+        private readonly IHttpClientFactory _httpClientFactory = httpClientFactory;
+
         public override string Name => Names.Commands.Notifications;
 
         public override string Category => Categories.Administrative;
@@ -18,18 +21,20 @@ namespace Tibres.Commands
 
             Permissions.ManageWebhooks.CheckIfGranted(user.GuildPermissions);
 
-            var webhooks = await command.Guild.GetWebhooksAsync();
-            var webhook = webhooks.FirstOrDefault(w => w.Creator.Id == user.Id && w.Name == Names.Webhooks.Notifications);
+            var embedBuilder = CreateEmbedBuilder().WithTitle("Notifications");
+            var option = command.Data.Options.FirstOrDefault();
+            var webhook = await command.Guild.FindWebhookAsync(Names.Webhooks.Notifications, creatorId: user.Id);
 
-            var subcommand = command.Data.Options.FirstOrDefault();
-            var subtask = subcommand?.Name switch
+            var commandTask = (option?.Name, webhook) switch
             {
-                Names.Options.Disable => DisableNotificationsAsync(command, webhook),
-                Names.Options.Enable  => EnableNotificationsAsync(command, subcommand, webhook),
-                _                     => throw new UnexpectedException()
+                (Names.Options.Disable, _)    => DisableNotificationsAsync(embedBuilder, webhook),
+                (Names.Options.Enable,  null) => EnableNotificationsAsync(embedBuilder, option, user.GetDisplayAvatarUrl()),
+                (Names.Options.Enable,  { })  => UpdateChannelAsync(embedBuilder, option, webhook),
+                _                             => throw new UnexpectedException()
             };
 
-            await subtask;
+            await commandTask;
+            await command.FollowupAsync(embed: embedBuilder.Build());
         }
 
         protected override SlashCommandProperties BuildCommandProperties(SlashCommandBuilder slashCommandBuilder)
@@ -60,43 +65,42 @@ namespace Tibres.Commands
                 .Build();
         }
 
-        private async Task DisableNotificationsAsync(RestSlashCommand command, RestWebhook? webhook)
+        private async Task EnableNotificationsAsync(EmbedBuilder embedBuilder, RestSlashCommandDataOption option, string avatarUrl)
+        {
+            var channel = option.GetChannel();
+
+            embedBuilder.WithDescription($"Notifications have been enabled on the {channel.Mention} channel.");
+
+            using var httpClient = _httpClientFactory.CreateClient();
+            using var avatarStream = await httpClient.GetStreamAsync(avatarUrl);
+
+            await channel.CreateWebhookAsync(Names.Webhooks.Notifications, avatarStream);
+        }
+
+        private static Task DisableNotificationsAsync(EmbedBuilder embedBuilder, RestWebhook? webhook)
         {
             if (webhook == null)
             {
                 throw new MissingWebhookException();
             }
 
-            var embedBuilder = CreateEmbedBuilder()
-                .WithTitle("Notifications")
-                .WithDescription("Notifications have been disabled on this server.");
+            embedBuilder.WithDescription("Notifications have been disabled on this server.");
 
-            await webhook.DeleteAsync();
-            await command.FollowupAsync(embed: embedBuilder.Build());
+            return webhook.DeleteAsync();
         }
 
-        private async Task EnableNotificationsAsync(RestSlashCommand command, RestSlashCommandDataOption option, RestWebhook? webhook)
+        private static Task UpdateChannelAsync(EmbedBuilder embedBuilder, RestSlashCommandDataOption option, RestWebhook webhook)
         {
-            var suboption = option.Options.FirstOrDefault();
+            var channel = option.GetChannel();
 
-            if (suboption?.Name != Names.Options.Channel || suboption.Value is not RestTextChannel channel)
-            {
-                throw new UnexpectedException();
-            }
-
-            if (webhook?.ChannelId == channel.Id)
+            if (webhook.ChannelId == channel.Id)
             {
                 throw new ExistingWebhookException(channel);
             }
 
-            var embedBuilder = CreateEmbedBuilder()
-                .WithTitle("Notifications")
-                .WithDescription(webhook == null
-                    ? $"Notifications have been enabled on the {channel.Mention} channel."
-                    : $"The channel for notifications has been changed to {channel.Mention}.");
+            embedBuilder.WithDescription($"The channel for notifications has been changed to {channel.Mention}.");
 
-            await (webhook?.ModifyAsync(w => w.ChannelId = channel.Id) ?? channel.CreateWebhookAsync(Names.Webhooks.Notifications));
-            await command.FollowupAsync(embed: embedBuilder.Build());
+            return webhook.ModifyAsync(w => w.ChannelId = channel.Id);
         }
     }
 }

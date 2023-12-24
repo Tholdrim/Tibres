@@ -9,9 +9,9 @@ namespace Tibres.Discord
     {
         ulong? MainGuildId { get; }
 
-        Task<IGuild?> GetMainGuildAsync();
+        Task<RestGuild?> GetMainGuildAsync();
 
-        Task<IDiscordInteraction> ParseHttpInteractionAsync(InteractionMessage message, Func<InteractionProperties, bool>? doApiCallOnCreation);
+        Task<RestInteraction> ParseHttpInteractionAsync(InteractionMessage message, Func<InteractionProperties, bool>? doApiCallOnCreation);
 
         Task RegisterSlashCommandsAsync(ApplicationCommandProperties[] commandProperties);
     }

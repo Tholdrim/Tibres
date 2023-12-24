@@ -60,10 +60,10 @@ jobs:
           do
             file="${entry##*/}"
 
-            az storage fs file upload --file-system emojis \
-                                      --path ${file,,} \
-                                      --source $entry \
-                                      --account-name ${{ vars.AZURE_STORAGE_ACCOUNT }} \
-                                      --content-type image/png \
-                                      --auth-mode login
+            az storage blob upload --file $entry \
+                                   --name ${file,,} \
+                                   --container-name emojis \
+                                   --account-name ${{ vars.AZURE_STORAGE_ACCOUNT }} \
+                                   --content-type image/png \
+                                   --auth-mode login
           done

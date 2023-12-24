@@ -32,7 +32,7 @@ jobs:
         run: |
           cd .\Source
           dotnet restore
-          dotnet list package --vulnerable --include-transitive | Out-String | Tee-Object -Variable 'output' 
+          dotnet list package --vulnerable --include-transitive | Tee-Object -Variable 'output' 
 
           # TODO: https://github.com/NuGet/Home/issues/11315
           if ($output.Contains('has the following vulnerable packages')) {

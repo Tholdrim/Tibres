@@ -1,5 +1,6 @@
 using Azure.Storage.Blobs;
 using Discord;
+using Discord.Rest;
 using Microsoft.Azure.Functions.Worker;
 using System;
 using System.Diagnostics.CodeAnalysis;
@@ -56,7 +57,7 @@ namespace Tibres
             }
         }
 
-        private static async Task<IEmote> UploadEmojiAsync(BlobContainerClient blobContainerClient, IGuild guild, string name)
+        private static async Task<IEmote> UploadEmojiAsync(BlobContainerClient blobContainerClient, RestGuild guild, string name)
         {
             var blob = blobContainerClient.GetBlobClient($"{name}.png");
 

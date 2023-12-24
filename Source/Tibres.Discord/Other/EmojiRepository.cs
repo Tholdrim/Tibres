@@ -36,10 +36,9 @@ namespace Tibres.Discord
                 return null;
             }
 
-            var emotes = await guild.GetEmotesAsync();
             var user = await guild.GetCurrentUserAsync();
 
-            return emotes.FindEmoji(emoji, creatorId: user.Id);
+            return await guild.FindEmojiAsync(emoji, creatorId: user.Id);
         }
     }
 }

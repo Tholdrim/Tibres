@@ -10,7 +10,7 @@ namespace Tibres.Discord
         {
             var name = emoji.ToName();
 
-            return emotes.FirstOrDefault(e => e.CreatorId == creatorId && e.Name == name);
+            return emotes.FirstOrDefault(e => e.Name == name && e.CreatorId == creatorId);
         }
     }
 }
