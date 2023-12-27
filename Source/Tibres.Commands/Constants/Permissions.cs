@@ -14,7 +14,7 @@ namespace Tibres.Commands
 
         public static readonly IPermission ManageWebhooks = new Permission("Manage Webhooks")
         {
-            Description = "to create webhooks used for automatic messaging",
+            Description = "to create webhooks for automated notifications",
             Selector = p => p.ManageWebhooks,
             IsOptional = true
         };

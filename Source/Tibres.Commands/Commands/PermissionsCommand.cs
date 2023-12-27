@@ -15,7 +15,7 @@ namespace Tibres.Commands
 
         public override string Category => Categories.Administrative;
 
-        public override string Description => "Lists the essential and optional permissions used by the bot along with their grant status.";
+        public override string Description => "Lists the essential and optional permissions used by the bot, along with their grant status.";
 
         public override async Task HandleInteractionAsync(RestSlashCommand command)
         {

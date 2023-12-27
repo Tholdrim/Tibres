@@ -98,7 +98,7 @@ namespace Tibres.Commands
                 throw new ExistingWebhookException(channel);
             }
 
-            embedBuilder.WithDescription($"The channel for notifications has been changed to {channel.Mention}.");
+            embedBuilder.WithDescription($"The notification channel has been changed to {channel.Mention}.");
 
             return webhook.ModifyAsync(w => w.ChannelId = channel.Id);
         }

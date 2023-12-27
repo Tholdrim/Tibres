@@ -2,6 +2,7 @@ using Azure.Storage.Blobs;
 using Discord;
 using Discord.Rest;
 using Microsoft.Azure.Functions.Worker;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
@@ -20,10 +21,13 @@ namespace Tibres
         [SuppressMessage("Style", "IDE0060:Remove unused parameter")]
         public async Task RunAsync(
             [TimerTrigger("%" + Names.AppSettings.InitializationFrequency + "%")] TimerInfo timerInfo,
-            [BlobInput(Names.BlobContainers.Emojis)] BlobContainerClient blobContainerClient)
+            [BlobInput(Names.BlobContainers.Emojis)] BlobContainerClient blobContainerClient,
+            FunctionContext context)
         {
+            var logger = context.GetLogger<InitializeBotFunction>();
+
             await RegisterCommandsAsync();
-            await UploadEmojisAsync(blobContainerClient);
+            await UploadEmojisAsync(blobContainerClient, logger);
         }
 
         private Task RegisterCommandsAsync()
@@ -33,13 +37,13 @@ namespace Tibres
             return _discordClient.RegisterSlashCommandsAsync(commandProperties);
         }
 
-        private async Task UploadEmojisAsync(BlobContainerClient blobContainerClient)
+        private async Task UploadEmojisAsync(BlobContainerClient blobContainerClient, ILogger logger)
         {
             var guild = await _discordClient.GetMainGuildAsync();
 
             if (guild == null)
             {
-                // TODO: Log information
+                logger.LogNoMainServer();
 
                 return;
             }

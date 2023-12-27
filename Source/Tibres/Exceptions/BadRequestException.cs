@@ -3,7 +3,7 @@ using System;
 namespace Tibres
 {
     internal class BadRequestException()
-        : Exception("HTTP request does not contain a body or required headers.")
+        : Exception("The HTTP request does not contain a body or the required headers.")
     {
     }
 }

@@ -13,17 +13,17 @@ namespace Tibres.Commands
 
         public override string Category => Categories.Other;
 
-        public override string Description => "Displays a brief description of the bot and information about available commands.";
+        public override string Description => "Displays a brief description of the bot and provides information about available commands.";
 
         public override Task HandleInteractionAsync(RestSlashCommand command)
         {
             var embedBuilder = CreateEmbedBuilder()
                .WithTitle("About")
-               .WithDescription("**Tibres** is an open-source Discord bot that makes it easier to track a player's advancement in the MMORPG " +
-                                "Tibia. The program retrieves and saves the results of individual characters. These are then used, among other " +
-                                "things, to generate monthly progress reports introducing an element of competition among server members and " +
-                                "encouraging them to work harder.")
-               .WithFooter("If you enjoy the bot, please show your support by giving the GitHub repository a star.");
+               .WithDescription("**Tibres** is an open-source Discord bot designed to facilitate tracking a player's progress in the MMORPG " +
+                                "Tibia. The program retrieves and saves individual character results, which are then used to generate monthly " +
+                                "summaries introducing an element of friendly competition among server members and encouraging them to actively " +
+                                "pursue improvement.")
+               .WithFooter("If you find the bot valuable, please express your support by starring the GitHub repository.");
 
             AddCommandCategoryFields(embedBuilder);
             AddContactField(embedBuilder);
@@ -57,8 +57,8 @@ namespace Tibres.Commands
         {
             var contactField = new EmbedFieldBuilder()
                 .WithName("Contact")
-                .WithValue("More information is available on the [project's Github page](https://github.com/Tholdrim/Tibres). The author also " +
-                           "encourages to contact him directly via Discord (<@133273246568153089>) for matters not addressed by the website.");
+                .WithValue("For more information, visit the [project's Github page](https://github.com/Tholdrim/Tibres). The author also " +
+                           "encourages direct contact via Discord (<@133273246568153089>) for matters not addressed on the website.");
 
             embedBuilder.AddField(contactField);
         }

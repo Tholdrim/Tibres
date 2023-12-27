@@ -14,8 +14,9 @@ namespace Tibres
         private readonly ICommandRepository _commandRepository = commandRepository;
 
         [Function(Names.Functions.HandleInteraction)]
-        public async Task RunAsync([QueueTrigger(Names.Queues.Interactions)] InteractionMessage message)
+        public async Task RunAsync([QueueTrigger(Names.Queues.Interactions)] InteractionMessage message, FunctionContext context)
         {
+            var logger = context.GetLogger<HandleInteractionFunction>();
             var interaction = await _discordClient.ParseHttpInteractionAsync(message, doApiCallOnCreation: _ => true);
 
             try
@@ -34,9 +35,9 @@ namespace Tibres
                     .WithDescription(exception is FormattedException formattedException ? formattedException.FormattedMessage : exception.Message)
                     .WithColor(Color.Red);
 
-                if (exception is UnexpectedException)
+                if (exception is UnexpectedException unexpectedException)
                 {
-                    // TODO: Log error
+                    logger.LogUnexpectedError(unexpectedException);
 
                     embedBuilder.WithFooter("If the problem persists, please report it.");
                 }

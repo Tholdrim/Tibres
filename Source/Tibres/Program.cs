@@ -3,7 +3,6 @@ using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using System.Text.Json;
 using Tibres.Commands;
 using Tibres.Discord;
@@ -27,7 +26,7 @@ static void ConfigureServices(HostBuilderContext context, IServiceCollection ser
 
     services.Configure<ApplicationInsightsServiceOptions>(ConfigureApplicationInsightsServiceOptions);
     services.Configure<JsonSerializerOptions>(ConfigureJsonSerializerOptions);
-    services.Configure<LoggerFilterOptions>(ConfigureLoggerFilterOptions);
+    services.Configure<WorkerOptions>(ConfigureWorkerOptions);
 }
 
 static void ConfigureApplicationInsightsServiceOptions(ApplicationInsightsServiceOptions options)
@@ -40,8 +39,7 @@ static void ConfigureJsonSerializerOptions(JsonSerializerOptions options)
     options.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
 }
 
-static void ConfigureLoggerFilterOptions(LoggerFilterOptions options)
+static void ConfigureWorkerOptions(WorkerOptions options)
 {
-    options.Rules.Clear();
-    options.AddFilter("Microsoft.Hosting.Lifetime", LogLevel.Warning);
+    options.EnableUserCodeException = true;
 }
